@@ -93,7 +93,12 @@ class OmbaxHub extends StatelessWidget {
 
   Widget _premiumCard(BuildContext context, int idx, String title, String sub, String desc, Color c1, Color c2, IconData ic, {bool isLocked=false, bool isPro=false, bool isFree=false, bool isLight=false, bool isLibra=false, bool isPrivate=false}) {
     return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MainNavigation(initialIndex: idx))),
+      onTap: () {
+  // Tap Hub Card - sudah di Hub, gak perlu pindah
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text('OMBAX PRO LIVE ACTIVE')),
+  );
+},
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [c1, c2]),
