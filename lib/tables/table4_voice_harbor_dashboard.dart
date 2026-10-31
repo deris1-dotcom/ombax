@@ -142,4 +142,19 @@ class Table4VoiceHarborDashboard extends StatelessWidget {
       ],
     );
   }
+
+// Di Table4VoiceHarborDashboard - tambah tombol Attach Storage 1
+ElevatedButton(
+  onPressed: () async {
+    // Ambil file dari Storage 1 (Akses 1)
+    final files = await StorageVault(id: 'akses_1').getFiles();
+    // Share ke Voice Room
+    await voiceRoomTabel4.attachFile(files.first);
+  },
+  child: Text('Attach from Storage 1'),
+)
+
+
+
+  
 }
