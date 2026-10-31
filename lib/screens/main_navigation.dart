@@ -1,31 +1,47 @@
 import 'package:flutter/material.dart';
 import 'ombax_hub.dart';
-import 'free_premium_screen.dart';
-import 'account_screen.dart';
 
 class MainNavigation extends StatefulWidget {
-  const MainNavigation({super.key});
+  final int initialIndex;
+  const MainNavigation({super.key, this.initialIndex = 0});
+
   @override
   State<MainNavigation> createState() => _MainNavigationState();
 }
 
 class _MainNavigationState extends State<MainNavigation> {
-  int _currentIndex = 0;
+  late int _currentIndex;
   double price = 42150.75;
 
-  final List<Widget> _screens = [
-    const OmbaxHub(),
-    const FreePremiumScreen(),
-    const AccountScreen(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+  }
+
+  // Placeholder biar gak error No such file
+  Widget _freeScreen() {
+    return const Center(child: Text('FREE PREMIUM - OMBAX PRO', style: TextStyle(color: Colors.white, fontSize: 20)));
+  }
+
+  Widget _accountScreen() {
+    return const Center(child: Text('ACCOUNT - OMBAX', style: TextStyle(color: Colors.white, fontSize: 20)));
+  }
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> screens = [
+      const OmbaxHub(),
+      _freeScreen(),
+      _accountScreen(),
+    ];
+
     return Scaffold(
       backgroundColor: const Color(0xFF0A0E1A),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0A0E1A),
         elevation: 0,
+        toolbarHeight: 110,
         title: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -45,17 +61,15 @@ class _MainNavigationState extends State<MainNavigation> {
                 ],
               ),
               Container(
-                width: 60,
-                height: 40,
+                width: 60, height: 40,
                 decoration: BoxDecoration(color: Colors.green.withOpacity(0.15), borderRadius: BorderRadius.circular(8)),
                 child: const Icon(Icons.show_chart, color: Colors.green),
               ),
             ],
           ),
         ),
-        toolbarHeight: 100,
       ),
-      body: _screens[_currentIndex],
+      body: screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF0A0E1A),
         selectedItemColor: Colors.green,
