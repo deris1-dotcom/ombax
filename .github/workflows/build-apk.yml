@@ -16,16 +16,19 @@ jobs:
         with:
           flutter-version: '3.22.0'
           channel: 'stable'
-      - name: ONE SHOT FIX - RESET TOTAL V1 TO V2
+      - name: ONE SHOT FIX V1 TO V2 + AGORA PERMISSION
         run: |
           rm -rf android
           flutter create . --org com.example --project-name ombax --platforms=android
           sed -i '/screenOrientation/d' android/app/src/main/AndroidManifest.xml
+          # Tambah permission Agora
+          sed -i 's/<manifest/<manifest xmlns:tools="http:\/\/schemas.android.com\/tools"/' android/app/src/main/AndroidManifest.xml
+          sed -i '/<application/i \    <uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />\n    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />\n    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />' android/app/src/main/AndroidManifest.xml
           flutter pub get
       - name: Build APK
         run: flutter build apk --release --no-tree-shake-icons
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: ombax-apk-FINAL-HIJAU-TUNTAS
+          name: ombax-apk-AGORA-FINAL
           path: build/app/outputs/flutter-apk/app-release.apk
