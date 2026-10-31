@@ -26,3 +26,9 @@ flutter:
   assets:
     - assets/
     - assets/images/
+
+
+  
+  agora_rtc_engine: ^6.3.0
+  permission_handler: ^11.3.0
+  flutter_sound: ^9.16.0
