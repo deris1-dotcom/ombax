@@ -32,3 +32,6 @@ flutter:
   agora_rtc_engine: ^6.3.0
   permission_handler: ^11.3.0
   flutter_sound: ^9.16.0
+
+    fl_chart: ^0.68.0
+  intl: ^0.19.0
