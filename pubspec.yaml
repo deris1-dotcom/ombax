@@ -1,47 +1,28 @@
-# pubspec.yaml
-# OMBAX AI - Pubspec LOCK - 6 Tables 1 APK
-# Surabaya - 2026
-
-name: ai_ombax_pro
-description: AI.OMBAX PRO - 6 Tables - Turquoise Gold Ocean - Live Profit $124K + $500 Today
+name: ombax
+description: Ombax Pro - Trading Dashboard
 publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.2.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.22.0'
 
 dependencies:
   flutter:
     sdk: flutter
-
-  # Core Bos
   cupertino_icons: ^1.0.6
-  google_fonts: ^6.1.0
-  
-  # State & Nav Bos
-  provider: ^6.1.1
-  
-  # Live Profit Logic Bos Tabel 3 Bos
-  intl: ^0.19.0
-
-  # Storage Bos
+  go_router: ^14.2.0
+  google_fonts: ^6.2.1
+  flutter_svg: ^2.0.10
   shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.1
+  flutter_lints: ^3.0.0
 
 flutter:
   uses-material-design: true
-
   assets:
-        - assets/logo/
-        - assets/logo/ombax_wave_compass.png
-        - assets/images/
-        - assets/icons/
-
-  fonts:
-        - family: OmbaxGold
-      fonts:
-                - asset: assets/fonts/OmbaxGold-Regular.ttf
+    - assets/
+    - assets/images/
