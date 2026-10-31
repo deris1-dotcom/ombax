@@ -55,19 +55,31 @@ class OmbaxHub extends StatelessWidget {
                         child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: isLandscape ? 40 : 16),
                           child: GridView.count(
-                            crossAxisCount: isLandscape ? 3 : 2,
-                            childAspectRatio: isLandscape ? 1.1 : 0.88,
-                            crossAxisSpacing: 14,
-                            mainAxisSpacing: 14,
-                            children: [
-                              _premiumCard(context, 0, 'Ombax', 'FREE', 'Ombax • Real-time • No Paywall', const Color(0xFF123A4A), const Color(0xFF0A2A3A), Icons.nightlight_round, isFree: true),
-                              _premiumCard(context, 1, 'VIP Gold', 'VIP GOLD', 'Gold • Priority • Exclusive', const Color(0xFF3A2E12), const Color(0xFF1F1A0A), Icons.emoji_events, isLocked: true),
-                              _premiumCard(context, 2, 'OMBAX PRO', '\$124,000', '+1.84% ↗ Live Market', const Color(0xFF0F2F1F), const Color(0xFF0A1F15), Icons.shield, isPro: true),
-                              _premiumCard(context, 3, 'Voice Harbor', 'Real-time\nCommunication', 'Active 12 Channels', const Color(0xFFE8F5E9), const Color(0xFFC8E6C9), Icons.hearing, isLight: true),
-                              _premiumCard(context, 4, 'AI LIBRA', 'AI Analytics Assistant', 'Insights • 24/7 • 96.8%', const Color(0xFF1A2342), const Color(0xFF0F1A2E), Icons.balance, isLibra: true),
-                              _premiumCard(context, 5, 'Private Assistant', 'Wave Assistant • Online', 'Wave Assistant • Online', const Color(0xFFFFFFFF), const Color(0xFFF5F5F5), Icons.support_agent, isLight: true, isPrivate: true),
-                            ],
-                          ),
+  crossAxisCount: 2,
+  shrinkWrap: true,
+  children: [
+    _hubCard(context, 'TABEL 2', 'Trade Signal', Icons.signal_cellular_alt, const Table2TradeSignalBoard()),
+    _hubCard(context, 'TABEL 3', 'Portfolio Vault', Icons.account_balance_wallet, const Table3PortfolioVault()),
+    _hubCard(context, 'TABEL 4', 'Voice Harbor', Icons.mic, const Table4VoiceHarborDashboard()),
+    _hubCard(context, 'TABEL 5', 'AI Libra', Icons.psychology, const Table5AiLibraDashboard()),
+  ],
+)
+
+Widget _hubCard(BuildContext context, String title, String sub, IconData icon, Widget page) {
+  return GestureDetector(
+    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => page)),
+    child: Container(
+      margin: const EdgeInsets.all(6),
+      decoration: BoxDecoration(color: const Color(0xFF121A2E), borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.white10)),
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Icon(icon, color: Colors.green, size: 28),
+        const SizedBox(height: 6),
+        Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+        Text(sub, style: const TextStyle(color: Colors.white54, fontSize: 10)),
+      ]),
+    ),
+  );
+}
                         ),
                       ),
                       Container(
