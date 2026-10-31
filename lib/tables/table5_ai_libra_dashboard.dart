@@ -143,4 +143,18 @@ class Table5AiLibraDashboard extends StatelessWidget {
       ],
     );
   }
+
+// Tabel 5 AI Libra - Dashboard & Fungsi
+class Table5AiLibraDashboard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(crossAxisCount: 2, children: [
+      LibraCard(title: 'Signal AI Libra', sub: 'Buy/Sell Libra'),
+      LibraCard(title: 'Dashboard Libra', sub: 'Balance & PnL'),
+      LibraCard(title: 'Auto Trade Libra', sub: 'AI Execution'),
+      LibraCard(title: 'History Libra', sub: 'Log Libra'),
+    ]);
+  }
+}
+  
 }
