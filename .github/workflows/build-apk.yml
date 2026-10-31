@@ -1,10 +1,8 @@
 name: Build Ombax APK
-
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,19 +16,22 @@ jobs:
         with:
           flutter-version: '3.22.0'
           channel: 'stable'
-
-      - name: Generate android folder if missing
+      - name: FIX V1 EMBEDDING FORCE
         run: |
-          if [ ! -d "android" ]; then
-            flutter create . --platforms=android --project-name ombax
-          fi
+          echo "FORCE FIX V1 -> V2"
+          rm -f android/app/src/main/java/io/flutter/app/FlutterApplication.java || true
+          mkdir -p android/app/src/main/kotlin/com/example/ombax
+          cat > android/app/src/main/kotlin/com/example/ombax/MainActivity.kt << 'EOF'
+          package com.example.ombax
+          import io.flutter.embedding.android.FlutterActivity
+          class MainActivity: FlutterActivity()
+          EOF
+          sed -i '/android:screenOrientation="portrait"/d' android/app/src/main/AndroidManifest.xml || true
           flutter pub get
-
       - name: Build APK
         run: flutter build apk --release --no-tree-shake-icons
-
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: ombax-pro-apk
+          name: ombax-apk-premium-v2-fixed
           path: build/app/outputs/flutter-apk/app-release.apk
