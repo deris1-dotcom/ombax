@@ -16,22 +16,16 @@ jobs:
         with:
           flutter-version: '3.22.0'
           channel: 'stable'
-      - name: FIX V1 EMBEDDING FORCE
+      - name: ONE SHOT FIX - RESET TOTAL V1 TO V2
         run: |
-          echo "FORCE FIX V1 -> V2"
-          rm -f android/app/src/main/java/io/flutter/app/FlutterApplication.java || true
-          mkdir -p android/app/src/main/kotlin/com/example/ombax
-          cat > android/app/src/main/kotlin/com/example/ombax/MainActivity.kt << 'EOF'
-          package com.example.ombax
-          import io.flutter.embedding.android.FlutterActivity
-          class MainActivity: FlutterActivity()
-          EOF
-          sed -i '/android:screenOrientation="portrait"/d' android/app/src/main/AndroidManifest.xml || true
+          rm -rf android
+          flutter create . --org com.example --project-name ombax --platforms=android
+          sed -i '/screenOrientation/d' android/app/src/main/AndroidManifest.xml
           flutter pub get
       - name: Build APK
         run: flutter build apk --release --no-tree-shake-icons
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: ombax-apk-premium-v2-fixed
+          name: ombax-apk-FINAL-HIJAU-TUNTAS
           path: build/app/outputs/flutter-apk/app-release.apk
