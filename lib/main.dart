@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'screens/ombax_hub.dart';
+import 'screens/main_navigation.dart';
 
-void main() {
-  runApp(const OmbaxApp());
-}
+void main() { runApp(const OmbaxApp()); }
 
 class OmbaxApp extends StatelessWidget {
   const OmbaxApp({super.key});
@@ -11,8 +9,9 @@ class OmbaxApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark(useMaterial3: true),
-      home: const OmbaxHub(), // FIX BOS - LANGSUNG KE HUB 6 KARTU BOS, BUKAN KE TABEL 1!
+      title: 'OMBAX PRO',
+      theme: ThemeData.dark(),
+      home: const MainNavigation(),
     );
   }
 }
