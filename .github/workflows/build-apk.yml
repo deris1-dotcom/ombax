@@ -1,91 +1,34 @@
-import 'package:flutter/material.dart';
-import '../tables/table2_trade_signal_board.dart';
-import '../tables/table3_portfolio_vault.dart';
-import '../tables/table4_voice_harbor_dashboard.dart';
-import '../tables/table5_ai_libra_dashboard.dart';
-import '../tables/table6_storage_vault.dart';
+name: Build Ombax APK
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
 
-class OmbaxHub extends StatelessWidget {
-  const OmbaxHub({super.key});
-
-  Widget _hubCard(BuildContext context, String title, String sub, IconData icon, Widget page) {
-    return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => page)),
-      child: Container(
-        margin: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
-          color: const Color(0xFF121A2E),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white10),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: Colors.green, size: 28),
-            const SizedBox(height: 6),
-            Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
-            Text(sub, style: const TextStyle(color: Colors.white54, fontSize: 10)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    double price = 42150.75;
-    return Container(
-      color: const Color(0xFF0A0E1A),
-      child: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.white10),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('OMBAX PRO LIVE', style: TextStyle(color: Colors.white54, fontSize: 10)),
-                        Text('\$${price.toStringAsFixed(2)}', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
-                        const Text('+1.84% Real-time • Agora Voice Ready', style: TextStyle(color: Colors.green, fontSize: 11)),
-                      ],
-                    ),
-                    Container(
-                      width: 60,
-                      height: 40,
-                      decoration: BoxDecoration(color: Colors.green.withOpacity(0.15), borderRadius: BorderRadius.circular(8)),
-                      child: const Icon(Icons.show_chart, color: Colors.green),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              GridView.count(
-                crossAxisCount: 2,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                childAspectRatio: 1.3,
-                children: [
-                  _hubCard(context, 'TABEL 2', 'Trade Signal', Icons.signal_cellular_alt, const Table2TradeSignalBoard()),
-                  _hubCard(context, 'TABEL 3', 'Portfolio Vault', Icons.account_balance_wallet, const Table3PortfolioVault()),
-                  _hubCard(context, 'TABEL 4', 'Voice Harbor', Icons.mic, const Table4VoiceHarborDashboard()),
-                  _hubCard(context, 'TABEL 5', 'AI Libra', Icons.psychology, const Table5AiLibraDashboard()),
-                  _hubCard(context, 'TABEL 6', 'Private Vault', Icons.folder_special, const Table6StorageVault()),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0'
+          channel: 'stable'
+      - name: ONE SHOT FIX V1 TO V2 + AGORA PERMISSION
+        run: |
+          rm -rf android
+          flutter create . --org com.example --project-name ombax --platforms=android
+          sed -i '/screenOrientation/d' android/app/src/main/AndroidManifest.xml
+          sed -i 's/<manifest/<manifest xmlns:tools="http:\/\/schemas.android.com\/tools"/' android/app/src/main/AndroidManifest.xml
+          sed -i '/<application/i \    <uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />\n    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />\n    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />' android/app/src/main/AndroidManifest.xml
+          flutter pub get
+      - name: Build APK
+        run: flutter build apk --release --no-tree-shake-icons
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ombax-apk-FINAL-FIXED
+          path: build/app/outputs/flutter-apk/app-release.apk
