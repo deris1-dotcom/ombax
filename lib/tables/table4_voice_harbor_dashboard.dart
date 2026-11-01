@@ -1,160 +1,181 @@
-// lib/tables/table4_voice_harbor_dashboard.dart
-// OMBAX VOICE HARBOR - Tabel 4 - Voice Room Pro
-// LOCK Version - Deep Ocean Voice Theme
-
 import 'package:flutter/material.dart';
-import 'table4_voice_harbor_widgets.dart';
+import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-class Table4VoiceHarborDashboard extends StatelessWidget {
+class Table4VoiceHarborDashboard extends StatefulWidget {
   const Table4VoiceHarborDashboard({super.key});
+  @override
+  State<Table4VoiceHarborDashboard> createState() => _Table4State();
+}
+
+class _Table4State extends State<Table4VoiceHarborDashboard> {
+  RtcEngine? engine;
+  bool joined = false;
+  int? remoteUid;
+  bool muted = false;
+
+  // GANTI BOS PAKAI APP ID BOS LU DARI console.agora.io BOS
+  final String appId = "YOUR_AGORA_APP_ID";
+  final String channel = "ombax_harbor";
+  final String token = "";
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF020E1A),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF020E1A), Color(0xFF0A1F33)],
-          ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                _buildHeader(),
-                const SizedBox(height: 18),
-                _buildLiveVoiceBar(),
-                const SizedBox(height: 18),
-                _buildVoiceGrid(),
-                const SizedBox(height: 16),
-                const AiSummaryVoiceFooter(),
-              ],
-            ),
-          ),
-        ),
+  void initState() {
+    super.initState();
+    initAgora();
+  }
+
+  Future<void> initAgora() async {
+    await Permission.microphone.request();
+    engine = createAgoraRtcEngine();
+    await engine!.initialize(RtcEngineContext(
+      appId: appId,
+      channelProfile: ChannelProfileType.channelProfileCommunication,
+    ));
+    engine!.registerEventHandler(RtcEngineEventHandler(
+      onJoinChannelSuccess: (RtcConnection c, int uid) {
+        setState(() => joined = true);
+      },
+      onUserJoined: (RtcConnection c, int uid, int elapsed) {
+        setState(() => remoteUid = uid);
+      },
+      onUserOffline: (RtcConnection c, int uid, UserOfflineReasonType reason) {
+        setState(() => remoteUid = null);
+      },
+    ));
+    await engine!.enableAudio();
+  }
+
+  Future<void> join() async {
+    await engine!.joinChannel(
+      token: token,
+      channelId: channel,
+      uid: 0,
+      options: const ChannelMediaOptions(
+        autoSubscribeAudio: true,
+        publishMicrophoneTrack: true,
       ),
     );
   }
 
-  Widget _buildHeader() {
-    return Row(
-      children: [
-        Container(
-          width: 58,
-          height: 58,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: const Color(0xFF38BDF8), width: 2.5),
-            boxShadow: [BoxShadow(color: const Color(0xFF38BDF8).withOpacity(0.5), blurRadius: 15)],
-            image: const DecorationImage(
-              image: AssetImage('assets/logo/ombax_wave_compass.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        const Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('AI.OMBAX VOICE HARBOR',
-                  style: TextStyle(color: Color(0xFF38BDF8), fontWeight: FontWeight.bold, fontSize: 15)),
-              Text('Voice Room • Tabel 4',
-                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-              Text('Live Voice Pro • Private Harbor',
-                  style: TextStyle(color: Colors.white54, fontSize: 11)),
-            ],
-          ),
-        ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          decoration: BoxDecoration(
-            color: Colors.redAccent.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.redAccent.withOpacity(0.5)),
-          ),
-          child: Row(
-            children: [
-              Container(width: 6, height: 6, decoration: const BoxDecoration(color: Colors.redAccent, shape: BoxShape.circle)),
-              const SizedBox(width: 5),
-              const Text('LIVE', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 10)),
-            ],
-          ),
-        ),
-      ],
-    );
+  Future<void> leave() async {
+    await engine!.leaveChannel();
+    setState(() {
+      joined = false;
+      remoteUid = null;
+    });
   }
 
-  Widget _buildLiveVoiceBar() {
+  @override
+  void dispose() {
+    engine?.leaveChannel();
+    engine?.release();
+    super.dispose();
+  }
+
+  Widget panel(IconData icon, String title, String sub) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.all(6),
       decoration: BoxDecoration(
         color: const Color(0xFF0F243E),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF38BDF8).withOpacity(0.3)),
+        border: Border.all(color: const Color(0xFF38BDF8).withOpacity(0.35)),
       ),
-      child: Row(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.graphic_eq, color: Color(0xFF38BDF8), size: 28),
-          const SizedBox(width: 10),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Harbor Master Live', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
-                Text('3 Traders Speaking • 12 Listening • Voice Latency 18ms',
-                    style: TextStyle(color: Colors.white60, fontSize: 11)),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(color: const Color(0xFF38BDF8), borderRadius: BorderRadius.circular(20)),
-            child: const Text('JOIN', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 11)),
-          ),
+          Icon(icon, color: const Color(0xFF38BDF8), size: 26),
+          const SizedBox(height: 4),
+          Text(title, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+          Text(sub, style: const TextStyle(color: Colors.white60, fontSize: 9)),
         ],
       ),
     );
   }
 
-  Widget _buildVoiceGrid() {
-    return GridView.count(
-      crossAxisCount: 3,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 12,
-      crossAxisSpacing: 12,
-      childAspectRatio: 1.05,
-      children: const [
-        VoicePanel(icon: Icons.mic, title: 'Voice Room', sub: 'Live Harbor'),
-        VoicePanel(icon: Icons.record_voice_over, title: 'Auto Transcript', sub: 'AI Voice'),
-        VoicePanel(icon: Icons.noise_aware, title: 'Noise Cancel', sub: 'Pro Clear'),
-        VoicePanel(icon: Icons.groups, title: 'Private Pods', sub: 'VIP Only'),
-        VoicePanel(icon: Icons.history, title: 'Replay Vault', sub: '10TB Storage'),
-        VoicePanel(icon: Icons.translate, title: 'Live Translate', sub: 'ID ↔ EN'),
-        VoicePanel(icon: Icons.security, title: 'Encrypted Voice', sub: 'E2E Secure'),
-        VoicePanel(icon: Icons.push_pin, title: 'Pin Signal', sub: 'Voice to Trade'),
-        VoicePanel(icon: Icons.workspace_premium, title: 'Captain Table', sub: 'Elite Voice'),
-      ],
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF020E1A),
+      appBar: AppBar(
+        title: const Text('TABEL 4 - VOICE HARBOR'),
+        backgroundColor: const Color(0xFF020E1A),
+      ),
+      body: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0F243E),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: const Color(0xFF38BDF8).withOpacity(0.3)),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.graphic_eq, color: Color(0xFF38BDF8)),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(joined ? 'CONNECTED' : 'DISCONNECTED', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                      Text(remoteUid != null ? 'Trader $remoteUid Speaking' : 'No remote trader', style: const TextStyle(color: Colors.white60, fontSize: 11)),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: joined ? Colors.green : Colors.redAccent,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(joined ? 'LIVE' : 'OFF', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10)),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: GridView.count(
+              crossAxisCount: 3,
+              padding: const EdgeInsets.all(12),
+              children: [
+                panel(Icons.mic, 'Voice Room', joined ? 'Joined' : 'Tap Join'),
+                panel(Icons.record_voice_over, 'Transcript', 'AI Voice'),
+                panel(Icons.groups, 'Pods', remoteUid != null ? '1 Online' : '0 Online'),
+                panel(Icons.security, 'Encrypted', 'E2E Secure'),
+                panel(Icons.translate, 'Translate', 'ID-EN'),
+                panel(Icons.folder, 'Storage 1', 'Ready'),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: joined ? leave : join,
+                  icon: Icon(joined ? Icons.call_end : Icons.call),
+                  label: Text(joined ? 'LEAVE' : 'JOIN HARBOR'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: joined ? Colors.red : Colors.green,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    engine?.muteLocalAudioStream(!muted);
+                    setState(() => muted = !muted);
+                  },
+                  icon: Icon(muted ? Icons.mic_off : Icons.mic, color: Colors.white),
+                  style: IconButton.styleFrom(backgroundColor: const Color(0xFF0F243E)),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
-
-// Di Table4VoiceHarborDashboard - tambah tombol Attach Storage 1
-ElevatedButton(
-  onPressed: () async {
-    // Ambil file dari Storage 1 (Akses 1)
-    final files = await StorageVault(id: 'akses_1').getFiles();
-    // Share ke Voice Room
-    await voiceRoomTabel4.attachFile(files.first);
-  },
-  child: Text('Attach from Storage 1'),
-)
-
-
-
-  
 }
